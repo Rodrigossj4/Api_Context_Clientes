@@ -125,11 +125,11 @@ def Put():
             jsonify(Erro(status=500, msg="Houve um erro durante a atualização").dict())), 500
 
 
-@app.delete('/s')
+@app.delete('/Clientes')
 @spec.validate(body=Request(Cliente), resp=Response(HTTP_400=Erro,  HTTP_500=Erro), tags=['Clientes'])
 def Delete():
     """
-    Deleta a seção da base de dados
+    Deleta um cliente da base de dados
 
     """
     try:
@@ -165,6 +165,55 @@ def Delete():
     except Exception as e:
         return make_response(
             jsonify(Erro(status=500, msg="Não é possível excluir.").dict())), 500
+
+
+@app.post('/BuscarClientes')
+# HTTP_200=Secoes
+@spec.validate(body=Request(Cliente), resp=Response(HTTP_200=Clientes), tags=['Clientes'])
+def BuscarCliente():
+    """
+    Retorna um cliente de acordo com os parâmetros pesquisados
+
+    """
+
+    cursor = conn.cursor()
+    cursor.execute('SELECT id, nome, documento FROM CLIENTES Where ativo = true ' +
+                   MontaPredicadoBuscaCliente(request))
+    clientes = cursor.fetchall()
+    cursor.close()
+
+    clientesVO = list()
+    for sc in clientes:
+        clientesVO.append({
+            'id': sc[0],
+            'nome': sc[1],
+            'documento': sc[2]
+        })
+
+    return make_response(
+        jsonify(Clientes(Clientes=clientesVO).dict()))
+
+
+def MontaPredicadoBuscaCliente(Clientes):
+    cliente = Clientes.json
+    predicado = ""
+
+    if (cliente.get("nome", False)):
+        if (cliente['nome'] != "") and (len(cliente['nome']) > 2):
+            predicado += " and nome like '%" + cliente['nome'] + "%'"
+
+    if (cliente.get("id", False)):
+        if (type(int(cliente['id']) != int)) and (cliente['id'] != 0) and (cliente['id'] != ""):
+            predicado += " and id = " + str(cliente['id']) + ""
+
+    if (cliente.get("documento", False)):
+        if (cliente['documento'] != "") and (len(cliente['documento']) == 11):
+            predicado += " and documento like '%" + cliente['documento'] + "%'"
+
+    if (predicado == ""):
+        predicado = " and id = 0"
+
+    return predicado
 
 
 app.run()
