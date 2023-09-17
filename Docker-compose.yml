@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  postgres:
+    container_name: bd_postgres_clientes
+    image: postgres
+      #build: ./db/Dockerfile
+    volumes:
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql 
+      - ./db/init.sh:/docker-entrypoint-initdb.d/init.sh
+    restart: always  
+    environment:
+      POSTGRES_DB: "clientes"
+      POSTGRES_HOST_AUTH_METHOD: "trust"
+      POSTGRES_PASSWORD: "123456"
+      POSTGRES_USER: "postgres"
+    ports:
+      - "5435:5432"            
+    networks:
+      - AdminClientes     
+ 
+  api:
+    image: api_context_clientes
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    restart: always   
+    ports:
+      - "5001:5000"
+    depends_on:
+      - postgres 
+    networks:
+      - AdminClientes
+
+networks: 
+  AdminClientes:
+    driver: bridge
+    external: false
+    name: AdminClientes
