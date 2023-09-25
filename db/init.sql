@@ -1,19 +1,25 @@
-\c ecommerce;
+CREATE DATABASE clientes;
 
-Create Table secao(
+\c clientes;
+
+Create Table clientes(
 	id serial primary key,
 	Nome varchar(100) not null,
-	Ativa bool default true
+	Documento varchar(100) not null,
+	Ativo bool default true
 );
 
-insert into secao("nome") values('secao 1');
-insert into secao("nome") values('secao 2');
 
-Create Table produtos(
+Create Table enderecos(
 	id serial primary key,
-	Nome varchar(250) not null,
-	Preco numeric not null,
-	idSecao int not null,
+	logradouro varchar(250) not null,
+	bairro varchar(100) not null,
+	cep varchar(100) not null,
+	numero varchar(10) not null,
+	complemento varchar(250) null,
+	cidade varchar(100) not null,
+	estado varchar(50) not null,
+	idCliente int not null,
 	Ativa bool default true,
-	foreign key (idSecao) references secao(id)
+	foreign key (idCliente) references clientes(id)
 );
