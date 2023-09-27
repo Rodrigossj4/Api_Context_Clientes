@@ -155,7 +155,10 @@ def Delete():
 
         cursor = conn.cursor()
         sql = f"DELETE FROM CLIENTES WHERE ID = {cliente['id']}"
+        sqlEndereco = f"DELETE FROM ENDERECOS WHERE IDCLIENTE = {cliente['id']}"
+        cursor.execute(sqlEndereco)
         cursor.execute(sql)
+
         conn.commit()
 
         cursor.close()
