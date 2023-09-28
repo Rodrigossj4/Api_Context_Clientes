@@ -203,7 +203,8 @@ def MontaPredicadoBuscaCliente(Clientes):
 
     if (cliente.get("nome", False)):
         if (cliente['nome'] != "") and (len(cliente['nome']) > 2):
-            predicado += " and nome like '%" + cliente['nome'] + "%'"
+            predicado += " and LOWER(nome) like '%" + \
+                str(cliente['nome']).lower() + "%'"
 
     if (cliente.get("id", False)):
         if (type(int(cliente['id']) != int)) and (cliente['id'] != 0) and (cliente['id'] != ""):
@@ -456,7 +457,8 @@ def MontaPredicadoBuscaEnderecos(Enderecos):
 
     if (endereco.get("bairro", False)):
         if (endereco['bairro'] != "") and (len(endereco['bairro']) > 2):
-            predicado += " and bairro like '%" + endereco['bairro'] + "%'"
+            predicado += " and LOWER(bairro) like '%" + \
+                str(endereco['bairro']).lower() + "%'"
 
     if (endereco.get("idCliente", False)):
         if (type(int(endereco['idCliente']) != int)) and (endereco['idCliente'] != 0) and (endereco['idCliente'] != ""):
